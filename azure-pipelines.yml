@@ -1,0 +1,28 @@
+trigger:
+  - main
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildJob
+        steps:
+          - script: npm install
+          - script: npm run build
+
+  - stage: Test
+    dependsOn: Build
+    jobs:
+      - job: TestJob
+        steps:
+          - script: npm test
+
+  - stage: Deploy
+    dependsOn: Test
+    jobs:
+      - deployment: DeployJob
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Deploying app..."
